@@ -12,8 +12,12 @@ $result = mysqli_query($conn, $query);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todolist UKK 2025</title>
+
     <!-- bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
 </head>
 
 <body>
@@ -34,7 +38,7 @@ $result = mysqli_query($conn, $query);
                         <h5 class="mb-0">Task List</h5>
                         <!-- Button trigger modal -->
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addTaskModal">
-                            Add Task
+                            <i class="fa-solid fa-plus"></i> Add Task
                         </button>
                     </div>
                     <div class="card-body">
@@ -86,8 +90,13 @@ $result = mysqli_query($conn, $query);
                                             <td>" . $row['due_date'] . "</td>
                                             <td>" . $row['status'] . "</td>
                                             <td>
-                                                <a href='edit_task.php?id=" . $row['id'] . "' class='btn btn-warning btn-sm'>Edit</a>
-                                                <a href='delete_task.php?id=" . $row['id'] . "' class='btn btn-danger btn-sm' onclick='return confirm(\"Are you sure?\")'>Delete</a>
+                                                <a href='edit_task.php?id=" . $row['id'] . "' class='btn btn-warning btn-sm'>
+                                                    <i class='fa-solid fa-pen'></i> Edit
+                                                </a>
+                                               <a href='delete_task.php?id=" . $row['id'] . "' class='btn btn-danger btn-sm' onclick='return confirm(\"Are you sure?\")'>
+                                                    <i class='fa-solid fa-trash'></i> Delete
+                                                </a>
+
                                             </td>
                                         </tr>";
                                         $no++;
