@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Feb 11, 2025 at 06:54 PM
+-- Generation Time: Feb 11, 2025 at 07:05 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.15
 
@@ -30,18 +30,17 @@ SET time_zone = "+00:00";
 CREATE TABLE `tasks` (
   `id` int NOT NULL,
   `task` varchar(255) NOT NULL,
-  `priority` enum('1','2','3') NOT NULL,
   `due_date` date NOT NULL,
-  `status` tinyint NOT NULL DEFAULT '0'
+  `status` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `tasks`
 --
 
-INSERT INTO `tasks` (`id`, `task`, `priority`, `due_date`, `status`) VALUES
-(24, 'beating elon musk', '3', '2025-02-09', 0),
-(25, 'clean my keyboard', '2', '2025-02-02', 0);
+INSERT INTO `tasks` (`id`, `task`, `due_date`, `status`) VALUES
+(12, 'beating elon musk', '2999-02-09', 'Pending'),
+(13, 'clean my keyboard', '2025-02-02', 'Completed');
 
 --
 -- Indexes for dumped tables
@@ -61,7 +60,7 @@ ALTER TABLE `tasks`
 -- AUTO_INCREMENT for table `tasks`
 --
 ALTER TABLE `tasks`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
