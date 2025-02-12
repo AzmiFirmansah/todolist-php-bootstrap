@@ -104,9 +104,12 @@ $result = mysqli_query($conn, $sql);
                                 $no = $start + 1;
                                 if (mysqli_num_rows($result) > 0) {
                                     while ($row = mysqli_fetch_array($result)) {
+                                        $taskContent = $row['status'] === 'Completed'
+                                            ? "<s>{$row['task']}</s>"
+                                            : $row['task'];
                                         echo "<tr>
                                             <td>" . $no . "</td>
-                                            <td>" . $row['task'] . "</td>
+                                            <td>" . $taskContent . "</td>
                                             <td>" . $row['due_date'] . "</td>
                                             <td>" . $row['status'] . "</td>
                                             <td>
