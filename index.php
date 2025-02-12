@@ -1,8 +1,14 @@
 <?php
 include "connection.php";
 
-$query = "SELECT * FROM tasks";
-$result = mysqli_query($conn, $query);
+if (isset($_POST['search'])) {
+    $search = $_POST['search'];
+    $sql = "SELECT * FROM tasks WHERE task LIKE '%$search%'";
+} else {
+    $sql = "SELECT * FROM tasks";
+}
+
+$result = mysqli_query($conn, $sql);
 ?>
 
 <!DOCTYPE html>
@@ -24,10 +30,13 @@ $result = mysqli_query($conn, $query);
     <!-- navbar -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">TodoList App</a>
+            <a class="navbar-brand" href="index.php">TodoList App</a>
+            <form action="index.php" method="post" class="d-flex" role="search">
+                <input class="form-control me-2" type="search" name="search" placeholder="Search tasks" aria-label="Search">
+                <button class="btn btn-outline-primary" type="submit">Search</button>
+            </form>
         </div>
     </nav>
-
 
     <!-- Content -->
     <div class="container mt-5">
