@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Feb 11, 2025 at 07:05 PM
+-- Generation Time: Feb 12, 2025 at 07:01 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.15
 
@@ -39,8 +39,12 @@ CREATE TABLE `tasks` (
 --
 
 INSERT INTO `tasks` (`id`, `task`, `due_date`, `status`) VALUES
-(12, 'beating elon musk', '2999-02-09', 'Pending'),
-(13, 'clean my keyboard', '2025-02-02', 'Completed');
+(12, 'beating elon musk', '3025-12-02', 'Pending'),
+(13, 'clean my keyboard', '2025-01-19', 'Completed'),
+(14, 'buy a laptop', '2024-08-12', 'Completed'),
+(15, 'conquer the world', '3025-12-03', 'Pending'),
+(16, 'fix the phone', '2024-12-11', 'Completed'),
+(17, 'reach 2000 elo in chess', '2025-01-03', 'Pending');
 
 --
 -- Indexes for dumped tables
@@ -60,7 +64,7 @@ ALTER TABLE `tasks`
 -- AUTO_INCREMENT for table `tasks`
 --
 ALTER TABLE `tasks`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

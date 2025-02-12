@@ -1,11 +1,22 @@
 <?php
 include "connection.php";
 
+$totalQuery = "SELECT COUNT(*) AS total FROM tasks";
+$totalResult = mysqli_query($conn, $totalQuery);
+$totalRow = mysqli_fetch_assoc($totalResult);
+$total = $totalRow['total'];
+
+$limit = 5;
+$totalPages = ceil($total / $limit);
+
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$start = ($page - 1) * $limit;
+
 if (isset($_POST['search'])) {
     $search = $_POST['search'];
-    $sql = "SELECT * FROM tasks WHERE task LIKE '%$search%'";
+    $sql = "SELECT * FROM tasks WHERE task LIKE '%$search%' LIMIT $start, $limit";
 } else {
-    $sql = "SELECT * FROM tasks";
+    $sql = "SELECT * FROM tasks LIMIT $start, $limit";
 }
 
 $result = mysqli_query($conn, $sql);
@@ -90,7 +101,7 @@ $result = mysqli_query($conn, $sql);
                             </thead>
                             <tbody>
                                 <?php
-                                $no = 1;
+                                $no = $start + 1;
                                 if (mysqli_num_rows($result) > 0) {
                                     while ($row = mysqli_fetch_array($result)) {
                                         echo "<tr>
@@ -119,6 +130,25 @@ $result = mysqli_query($conn, $sql);
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Pagination -->
+                    <?php if ($total > $limit): ?>
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-end me-3">
+                                <li class="page-item <?php echo $page == 1 ? 'disabled' : ''; ?>">
+                                    <a class="page-link" href="?page=<?php echo $page - 1; ?>">Previous</a>
+                                </li>
+                                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                    <li class="page-item <?php echo $page == $i ? 'active' : ''; ?>">
+                                        <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                                    </li>
+                                <?php endfor; ?>
+                                <li class="page-item <?php echo $page == $totalPages ? 'disabled' : ''; ?>">
+                                    <a class="page-link" href="?page=<?php echo $page + 1; ?>">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
