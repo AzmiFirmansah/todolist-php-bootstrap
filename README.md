@@ -9,6 +9,7 @@ This repository contains a simple TodoList web application built with PHP, MySQL
 - **Task Management**: Add, edit, and delete tasks easily.
 - **Due Date Tracking**: Assign due dates to tasks.
 - **Status Updates**: Mark tasks as pending or completed.
+- **Search Bar**: Quickly search tasks by name.
 - **Responsive Design**: Built with Bootstrap for a mobile-friendly UI.
 
 ## Installation Instructions
@@ -52,4 +53,5 @@ This repository contains a simple TodoList web application built with PHP, MySQL
 - Click the **"Add Task"** button to create a new task.
 - Use the **"Edit"** button to update an existing task.
 - Click the **"Delete"** button to remove a task (confirmation required).
+- Use the **Search Bar** in the navbar to filter tasks by name. Enter a keyword and click **Search** to see results.
 - Tasks will be displayed in a list format with status indicators.
