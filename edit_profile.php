@@ -9,7 +9,6 @@ if (!isset($_SESSION['username'])) {
 
 $username = $_SESSION['username'];
 
-// Fetch user data
 $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
@@ -26,20 +25,17 @@ $usernameError = "";
 $passwordError = "";
 $noChangesError = "";
 
-// If form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fullname = trim($_POST['fullname']);
     $newUsername = trim($_POST['username']);
     $password = trim($_POST['password']);
 
-    // Validate username
     if (empty($newUsername)) {
         $usernameError = "Username cannot be empty.";
     } elseif (strpos($newUsername, ' ') !== false) {
         $usernameError = "Username cannot contain spaces.";
     }
 
-    // Validate password
     if (!empty($password)) {
         if (strpos($password, ' ') !== false) {
             $passwordError = "Password cannot have spaces.";
@@ -48,11 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Check if there are changes
     if (empty($usernameError) && empty($passwordError)) {
         $changesMade = false;
 
-        // Check if the full name or username has changed
         if ($fullname !== $userData['fullname']) {
             $changesMade = true;
         }
@@ -63,12 +57,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $changesMade = true;
         }
 
-        // If no changes were made
         if (!$changesMade) {
             $noChangesError = "No changes were made to your profile.";
         }
 
-        // Proceed to update if there are changes
         if ($changesMade) {
             if (!empty($password)) {
                 $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
@@ -81,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($stmt->execute()) {
                 $_SESSION['success'] = "Profile updated successfully.";
-                $_SESSION['username'] = $newUsername; // Update session username
+                $_SESSION['username'] = $newUsername;
             } else {
                 $_SESSION['error'] = "Error updating profile.";
             }

@@ -62,10 +62,6 @@ if (!$row) {
         <div class="container-fluid">
             <a class="navbar-brand" href="todo.php">TodoList App</a>
             <div class="d-flex ms-auto align-items-center">
-                <form action="todo.php" method="get" class="d-flex me-3" role="search">
-                    <input class="form-control me-2" type="search" name="search" placeholder="Search tasks" aria-label="Search">
-                    <button class="btn btn-outline-primary" type="submit">Search</button>
-                </form>
                 <div class="dropdown">
                     <button class="btn btn-transparent border-0 text-primary" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-user text-primary"></i>
@@ -113,7 +109,8 @@ if (!$row) {
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
