@@ -12,6 +12,10 @@ This repository contains a simple TodoList web application built with PHP, MySQL
 - **Search Bar**: Quickly search tasks by name.
 - **Pagination**: Tasks are displayed with pagination, allowing users to navigate through multiple pages of tasks easily.
 - **Responsive Design**: Built with Bootstrap for a mobile-friendly UI.
+- **User Authentication**:
+  - User registration to create an account.
+  - Login and logout functionality.
+  - Edit user profile information.
 
 ## Installation Instructions
 
@@ -33,7 +37,7 @@ This repository contains a simple TodoList web application built with PHP, MySQL
      ```php
      $db_host = 'localhost';
      $db_user = 'root';
-     $db_pass = 'yourpassword';
+     $db_pass = '';
      $db_name = 'todo';
      ```
 
@@ -56,4 +60,10 @@ This repository contains a simple TodoList web application built with PHP, MySQL
 - Click the **"Delete"** button to remove a task (confirmation required).
 - Use the **Search Bar** in the navbar to filter tasks by name. Enter a keyword and click **Search** to see results.
 - Use **Pagination** to navigate between pages when there are many tasks. The application displays a set number of tasks per page, making it easier to manage large lists.
+- **User Authentication**:
+  - Register an account to manage tasks.
+  - Login to access and modify tasks.
+  - Edit profile information when needed.
+  - Logout securely when finished.
 - Tasks will be displayed in a list format with status indicators.
+
