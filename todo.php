@@ -1,5 +1,5 @@
 <?php
-include 'connection.php';
+include __DIR__ . '/includes/connection.php';
 session_start();
 
 if (!isset($_SESSION['username'])) {
@@ -23,50 +23,54 @@ $userStmt->execute();
 $userResult = $userStmt->get_result();
 $userData = $userResult->fetch_assoc();
 
+if (!$userData) {
+    die("User not found.");
+}
+
 $user_id = $userData['id'];
 $fullname = $userData['fullname'];
 
 $limit = 5;
-$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $start = ($page - 1) * $limit;
-$search = htmlspecialchars($_GET['search'] ?? '', ENT_QUOTES, 'UTF-8');
-$status = $_GET['status'] ?? '';
+$search = '%' . ($_GET['search'] ?? '') . '%';
+$status = isset($_GET['status']) ? trim($_GET['status']) : '';
+$priority = $_GET['priority'] ?? '';
 
 $query = "SELECT * FROM tasks WHERE user_id = ? AND task LIKE ?";
 $totalQuery = "SELECT COUNT(*) AS total FROM tasks WHERE user_id = ? AND task LIKE ?";
+$params = [$user_id, $search];
+$totalParams = [$user_id, $search];
+$types = "is";
 
 if (!empty($status)) {
     $query .= " AND status = ?";
     $totalQuery .= " AND status = ?";
-}
-
-$query .= " LIMIT ?, ?";
-
-$stmt = $conn->prepare($query);
-$params = ["is", $user_id, "%$search%"];
-
-if (!empty($status)) {
-    $params[0] .= "s";
     $params[] = $status;
+    $totalParams[] = $status;
+    $types .= "s";
 }
 
-$params[0] .= "ii";
+if (!empty($priority)) {
+    $query .= " AND priority = ?";
+    $totalQuery .= " AND priority = ?";
+    $params[] = $priority;
+    $totalParams[] = $priority;
+    $types .= "s";
+}
+
+$query .= " ORDER BY FIELD(priority, 'High', 'Medium', 'Low'), due_date ASC LIMIT ?, ?";
 $params[] = $start;
 $params[] = $limit;
+$types .= "ii";
 
-$stmt->bind_param(...$params);
+$stmt = $conn->prepare($query);
+$stmt->bind_param($types, ...$params);
 $stmt->execute();
 $result = $stmt->get_result();
 
 $totalStmt = $conn->prepare($totalQuery);
-$totalParams = ["is", $user_id, "%$search%"];
-
-if (!empty($status)) {
-    $totalParams[0] .= "s";
-    $totalParams[] = $status;
-}
-
-$totalStmt->bind_param(...$totalParams);
+$totalStmt->bind_param(substr($types, 0, -2), ...$totalParams);
 $totalStmt->execute();
 $totalResult = $totalStmt->get_result();
 $total = $totalResult->fetch_assoc()['total'];
@@ -82,10 +86,10 @@ $totalPages = ceil($total / $limit);
     <title>Todolist UKK 2025</title>
 
     <!-- bootstrap CSS -->
-    <link href="bootstrap-5.3.3-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="fontawesome-free-6.7.2-web/css/all.min.css">
+    <link href="assets/fontawesome/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -103,8 +107,8 @@ $totalPages = ceil($total / $limit);
                         <i class="fa fa-user text-primary"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                        <li><a class="dropdown-item" href="edit_profile.php">Edit Profile</a></li>
-                        <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                        <li><a class="dropdown-item" href="profile/edit_profile.php">Edit Profile</a></li>
+                        <li><a class="dropdown-item" href="auth/logout.php">Logout</a></li>
                     </ul>
                 </div>
             </div>
@@ -121,21 +125,28 @@ $totalPages = ceil($total / $limit);
 
     <!-- Filter Status -->
     <div class="container mt-3">
-        <div class="row">
+        <form method="get" action="todo.php" class="row g-2">
+            <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
             <div class="col-md-3">
-                <form method="get" action="todo.php">
-                    <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
-                    <label for="filterStatus" class="form-label">Filter by Status:</label>
-                    <select name="status" id="filterStatus" class="form-select w-100" onchange="this.form.submit()">
-                        <option value="" <?php echo empty($status) ? 'selected' : ''; ?>>All</option>
-                        <option value="Pending" <?php echo $status === 'Pending' ? 'selected' : ''; ?>>Pending</option>
-                        <option value="Completed" <?php echo $status === 'Completed' ? 'selected' : ''; ?>>Completed</option>
-                    </select>
-                </form>
-
+                <label class="form-label">Status:</label>
+                <select name="status" class="form-select" onchange="this.form.submit()">
+                    <option value="" <?php echo empty($status) ? 'selected' : ''; ?>>All</option>
+                    <option value="Pending" <?php echo $status === 'Pending' ? 'selected' : ''; ?>>Pending</option>
+                    <option value="Completed" <?php echo $status === 'Completed' ? 'selected' : ''; ?>>Completed</option>
+                </select>
             </div>
-        </div>
+            <div class="col-md-3">
+                <label class="form-label">Priority:</label>
+                <select name="priority" class="form-select" onchange="this.form.submit()">
+                    <option value="" <?php echo empty($priority) ? 'selected' : ''; ?>>All</option>
+                    <option value="Low" <?php echo $priority === 'Low' ? 'selected' : ''; ?>>Low</option>
+                    <option value="Medium" <?php echo $priority === 'Medium' ? 'selected' : ''; ?>>Medium</option>
+                    <option value="High" <?php echo $priority === 'High' ? 'selected' : ''; ?>>High</option>
+                </select>
+            </div>
+        </form>
     </div>
+
 
     <!-- Content -->
     <div class="container mt-3">
@@ -202,6 +213,7 @@ $totalPages = ceil($total / $limit);
                                     <td>No</td>
                                     <td>Task</td>
                                     <td>Due Date</td>
+                                    <td>Priority</td>
                                     <td>Status</td>
                                     <td>Action</td>
                                 </tr>
@@ -212,28 +224,40 @@ $totalPages = ceil($total / $limit);
                                 if (mysqli_num_rows($result) > 0) {
                                     while ($row = mysqli_fetch_array($result)) {
                                         $taskContent = $row['status'] === 'Completed'
-                                            ? "<s>{$row['task']}</s>"
-                                            : $row['task'];
-                                        echo "<tr>
-                                            <td>" . $no . "</td>
-                                            <td>" . $taskContent . "</td>
-                                            <td>" . $row['due_date'] . "</td>
-                                            <td>" . $row['status'] . "</td>
+                                            ? "<s>" . htmlspecialchars($row['task']) . "</s>"
+                                            : htmlspecialchars($row['task']);
+
+                                        $textClass = match ($row['priority']) {
+                                            'High'    => 'text-danger',
+                                            'Medium'  => 'text-warning',
+                                            'Low'     => 'text-success',
+                                            default   => 'text-secondary'
+                                        };
+                                ?>
+                                        <tr>
+                                            <td><?= $no ?></td>
+                                            <td><?= $taskContent ?></td>
+                                            <td><?= $row['due_date'] ?></td>
                                             <td>
-                                                <a href='edit_task.php?id=" . $row['id'] . "' class='btn btn-warning btn-sm'>
-                                                    <i class='fa-solid fa-pen'></i> Edit
+                                                <span class="<?= $textClass ?> ">
+                                                    <?= $row['priority'] ?>
+                                                </span>
+                                            </td>
+                                            <td><?= $row['status'] ?></td>
+                                            <td>
+                                                <a href="tasks/edit_task.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm">
+                                                    <i class="fa-solid fa-pen"></i> Edit
                                                 </a>
-                                               <a href='delete_task.php?id=" . $row['id'] . "' class='btn btn-danger btn-sm' onclick='return confirm(\"Are you sure?\")'>
-                                                    <i class='fa-solid fa-trash'></i> Delete
+                                                <a href="tasks/delete_task.php?id=<?= $row['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
+                                                    <i class="fa-solid fa-trash"></i> Delete
                                                 </a>
                                             </td>
-                                        </tr>";
+                                        </tr>
+                                <?php
                                         $no++;
                                     }
                                 } else {
-                                    echo "<tr>
-                                        <td colspan='5' class='text-center'>No tasks available</td>
-                                    </tr>";
+                                    echo '<tr><td colspan="6" class="text-center">No tasks available</td></tr>';
                                 }
                                 ?>
                             </tbody>
@@ -245,15 +269,24 @@ $totalPages = ceil($total / $limit);
                         <nav aria-label="Page navigation example">
                             <ul class="pagination justify-content-end me-3">
                                 <li class="page-item <?php echo $page == 1 ? 'disabled' : ''; ?>">
-                                    <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($status); ?>">Previous</a>
+                                    <a class="page-link"
+                                        href="?page=<?= $page - 1 ?>&search=<?= urlencode($search) ?>&status=<?= urlencode($status) ?>&priority=<?= urlencode($priority) ?>">
+                                        Previous
+                                    </a>
                                 </li>
                                 <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                    <li class="page-item <?php echo $page == $i ? 'active' : ''; ?>">
-                                        <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($status); ?>"><?php echo $i; ?></a>
+                                    <li class="page-item <?= $page == $i ? 'active' : '' ?>">
+                                        <a class="page-link"
+                                            href="?page=<?= $i ?>&search=<?= urlencode($search) ?>&status=<?= urlencode($status) ?>&priority=<?= urlencode($priority) ?>">
+                                            <?= $i ?>
+                                        </a>
                                     </li>
                                 <?php endfor; ?>
                                 <li class="page-item <?php echo $page == $totalPages ? 'disabled' : ''; ?>">
-                                    <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($status); ?>">Next</a>
+                                    <a class="page-link"
+                                        href="?page=<?= $page + 1 ?>&search=<?= urlencode($search) ?>&status=<?= urlencode($status) ?>&priority=<?= urlencode($priority) ?>">
+                                        Next
+                                    </a>
                                 </li>
                             </ul>
                         </nav>
@@ -271,7 +304,7 @@ $totalPages = ceil($total / $limit);
                     <h1 class="modal-title fs-5" id="addTaskModalLabel">Add Task</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="add_task.php" method="post">
+                <form action="tasks/add_task.php" method="post">
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="taskName" class="form-label">Task Name</label>
@@ -282,6 +315,14 @@ $totalPages = ceil($total / $limit);
                             <input type="date" class="form-control" id="dueDate" name="due_date" required min="1900-01-01" max="2099-12-31">
                         </div>
                         <div class="mb-3">
+                            <label for="priority" class="form-label">Priority</label>
+                            <select class="form-select" id="priority" name="priority" required>
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
                             <select class="form-control" id="status" name="status">
                                 <option value="Pending">Pending</option>
@@ -290,8 +331,8 @@ $totalPages = ceil($total / $limit);
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save Task</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Task</button>
                     </div>
                 </form>
             </div>
@@ -299,7 +340,7 @@ $totalPages = ceil($total / $limit);
     </div>
 
     <!-- Bootstrap JS -->
-    <script src="bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

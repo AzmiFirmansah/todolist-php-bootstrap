@@ -29,7 +29,7 @@ This repository contains a simple TodoList web application built with PHP, MySQL
 
 2. **Set Up Database**
 
-   - Import `todolist.sql` into your MySQL database.
+   - Import `todo.sql` into your MySQL database.
 
 3. **Configure Database Connection**
 

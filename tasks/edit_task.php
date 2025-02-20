@@ -1,9 +1,9 @@
 <?php
-include "connection.php";
+require_once __DIR__ . "/../includes/connection.php";
 session_start();
 
 if (!isset($_SESSION['username'])) {
-    header("Location: index.php");
+    header("Location: ../index.php");
     exit();
 }
 
@@ -13,15 +13,15 @@ $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
 $result = $stmt->get_result();
+$userData = $result->fetch_assoc();
+$stmt->close();
 
-if ($result->num_rows === 1) {
-    $userData = $result->fetch_assoc();
-    $user_id = $userData['id'];
-} else {
+if (!$userData) {
     echo "User not found.";
     exit();
 }
-$stmt->close();
+
+$user_id = $userData['id'];
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($id <= 0) {
@@ -48,27 +48,27 @@ if (!$row) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todolist UKK 2025</title>
+    <title>Edit Task - Todolist UKK 2025</title>
 
-    <!-- bootstrap CSS -->
-    <link href="bootstrap-5.3.3-dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="../assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="fontawesome-free-6.7.2-web/css/all.min.css">
+    <link href="../assets/fontawesome/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="todo.php">TodoList App</a>
+            <a class="navbar-brand" href="../todo.php">TodoList App</a>
             <div class="d-flex ms-auto align-items-center">
                 <div class="dropdown">
                     <button class="btn btn-transparent border-0 text-primary" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-user text-primary"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                        <li><a class="dropdown-item" href="#">Edit Profile</a></li>
-                        <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                        <li><a class="dropdown-item" href="../profile/edit_profile.php">Edit Profile</a></li>
+                        <li><a class="dropdown-item" href="../auth/logout.php">Logout</a></li>
                     </ul>
                 </div>
             </div>
@@ -94,14 +94,31 @@ if (!$row) {
                                 <input type="date" class="form-control" id="due_date" name="due_date" value="<?php echo htmlspecialchars($row['due_date']); ?>" required>
                             </div>
                             <div class="mb-3">
+                                <label for="priority" class="form-label">Priority</label>
+                                <select class="form-control" id="priority" name="priority" required>
+                                    <?php
+                                    $priorities = ['High', 'Medium', 'Low'];
+                                    foreach ($priorities as $priority) {
+                                        $selected = ($row['priority'] == $priority) ? 'selected' : '';
+                                        echo "<option value=\"$priority\" $selected>$priority</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="mb-3">
                                 <label for="status" class="form-label">Status</label>
-                                <select class="form-control" id="status" name="status">
-                                    <option value="Pending" <?php echo ($row['status'] == 'Pending') ? 'selected' : ''; ?>>Pending</option>
-                                    <option value="Completed" <?php echo ($row['status'] == 'Completed') ? 'selected' : ''; ?>>Completed</option>
+                                <select class="form-control" id="status" name="status" required>
+                                    <?php
+                                    $statuses = ['Pending', 'Completed'];
+                                    foreach ($statuses as $status) {
+                                        $selected = ($row['status'] == $status) ? 'selected' : '';
+                                        echo "<option value=\"$status\" $selected>$status</option>";
+                                    }
+                                    ?>
                                 </select>
                             </div>
                             <button type="submit" class="btn btn-primary">Update Task</button>
-                            <a href="todo.php" class="btn btn-secondary">Cancel</a>
+                            <a href="../todo.php" class="btn btn-secondary">Cancel</a>
                         </form>
                     </div>
                 </div>
@@ -110,7 +127,7 @@ if (!$row) {
     </div>
 
     <!-- Bootstrap JS -->
-    <script src="bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

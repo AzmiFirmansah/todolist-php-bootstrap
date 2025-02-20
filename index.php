@@ -1,17 +1,18 @@
 <?php
-include 'connection.php';
+include __DIR__ . '/includes/connection.php';
 session_start();
 
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = substr($_POST['username'], 0, 30);
-    $password = $_POST['password'];
+    $username = trim(substr($_POST['username'], 0, 30));
+    $password = trim($_POST['password']);
 
     $stmt = $conn->prepare("SELECT * FROM users WHERE BINARY username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
+    $stmt->close();
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
@@ -19,18 +20,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (password_verify($password, $row['password'])) {
             if (password_needs_rehash($row['password'], PASSWORD_DEFAULT)) {
                 $newHash = password_hash($password, PASSWORD_DEFAULT);
+                $updateStmt = $conn->prepare("UPDATE users SET password = ? WHERE id = ?");
+                $updateStmt->bind_param("si", $newHash, $row['id']);
+                $updateStmt->execute();
+                $updateStmt->close();
             }
 
             $_SESSION['user_id'] = $row['id'];
             $_SESSION['username'] = $username;
             header("Location: todo.php");
             exit();
-        } else {
-            $error = "Invalid username or password.";
         }
-    } else {
-        $error = "Invalid username or password.";
     }
+
+    $error = "Invalid username or password.";
 }
 ?>
 
@@ -40,13 +43,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todolist UKK 2025</title>
+    <title>Login - Todolist UKK 2025</title>
 
-    <!-- bootstrap CSS -->
-    <link href="bootstrap-5.3.3-dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="fontawesome-free-6.7.2-web/css/all.min.css">
+    <link href="assets/fontawesome/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -57,9 +60,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <strong>LOGIN</strong>
                 </div>
                 <div class="card-body">
-                    <?php if ($error): ?>
+                    <?php if (!empty($error)): ?>
                         <div class="alert alert-danger">
-                            <?php echo $error; ?>
+                            <?= htmlspecialchars($error); ?>
                         </div>
                     <?php endif; ?>
                     <div class="mb-3">
@@ -74,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="card-footer">
                     <button type="submit" class="btn btn-primary w-100">LOGIN</button>
                     <div class="text-center mt-3">
-                        <small>Don't have an account? <a href="registration.php" class="text-primary">Sign Up</a></small>
+                        <small>Don't have an account? <a href="auth/registration.php" class="text-primary">Sign Up</a></small>
                     </div>
                 </div>
             </div>
@@ -82,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
 
     <!-- Bootstrap JS -->
-    <script src="bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

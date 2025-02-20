@@ -2,11 +2,11 @@
 session_start();
 
 if (!isset($_SESSION['username'])) {
-    header("Location: index.php");
+    header("Location: ../index.php");
     exit();
 }
 
-require_once 'connection.php';
+require_once __DIR__ . "/../includes/connection.php";
 
 $username = $_SESSION['username'];
 $user_id = null;
@@ -21,7 +21,7 @@ if ($result->num_rows === 1) {
     $userData = $result->fetch_assoc();
     $user_id = (int)$userData['id'];
 } else {
-    header("Location: todo.php?error=user_not_found");
+    header("Location: ../todo.php?error=user_not_found");
     exit();
 }
 
@@ -37,18 +37,18 @@ if ($id > 0 && $user_id !== null) {
         $deleteStmt->execute();
 
         if ($deleteStmt->affected_rows === 1) {
-            header("Location: todo.php?task_deleted=success");
+            header("Location: ../todo.php?task_deleted=success");
         } else {
-            header("Location: todo.php?task_deleted=db_error");
+            header("Location: ../todo.php?task_deleted=db_error");
         }
     } else {
-        header("Location: todo.php?task_deleted=unauthorized");
+        header("Location: ../todo.php?task_deleted=unauthorized");
     }
 
     $checkStmt->close();
     $deleteStmt->close();
 } else {
-    header("Location: todo.php?task_deleted=invalid_id");
+    header("Location: ../todo.php?task_deleted=invalid_id");
 }
 
 $stmt->close();
