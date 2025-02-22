@@ -10,10 +10,12 @@ This repository contains a simple TodoList web application built with PHP, MySQL
 - **Due Date Tracking**: Assign due dates to tasks.
 - **Status Updates**: Mark tasks as pending or completed.
 - **Search Bar**: Quickly search tasks by name.
-- **Pagination**: Tasks are displayed with pagination, allowing users to navigate through multiple pages of tasks easily.
+- **Pagination**: Navigate through multiple pages of tasks efficiently.
+- **Priority Filtering**: Filter tasks by priority level (high, medium, or low).
+- **Status Filtering**: Filter tasks by status (completed or pending).
 - **Responsive Design**: Built with Bootstrap for a mobile-friendly UI.
 - **User Authentication**:
-  - User registration to create an account.
+  - Register an account to manage tasks.
   - Login and logout functionality.
   - Edit user profile information.
 
@@ -48,22 +50,24 @@ This repository contains a simple TodoList web application built with PHP, MySQL
 
 ## System Requirements
 
-- **PHP**: Version 7.4 or higher
-- **MySQL**: Version 5.7 or higher
-- **Web Server**: Apache or any server supporting PHP
-- **Browser**: Chrome, Firefox, Edge, or other modern browsers
+- **PHP**: 7.4 or higher (Recommended: 8.1+)
+- **MySQL**: 8.0.30 or higher (Required)
+- **Web Server**: Apache 2.4+ or Nginx
+- **Browser**: Chrome, Firefox, Edge (modern versions)
 
 ## Usage Guide
 
-- Click the **"Add Task"** button to create a new task.
-- Use the **"Edit"** button to update an existing task.
-- Click the **"Delete"** button to remove a task (confirmation required).
-- Use the **Search Bar** in the navbar to filter tasks by name. Enter a keyword and click **Search** to see results.
-- Use **Pagination** to navigate between pages when there are many tasks. The application displays a set number of tasks per page, making it easier to manage large lists.
+- **Add Task**: Click the **"Add Task"** button to create a new task.
+- **Edit Task**: Click the **"Edit"** button to update an existing task.
+- **Delete Task**: Click the **"Delete"** button to remove a task (confirmation required).
+- **Search Tasks**: Use the **Search Bar** in the navbar to filter tasks by name. Enter a keyword and click **Search** to see results.
+- **Pagination**: Navigate between pages when there are many tasks. The application displays a set number of tasks per page for easier management.
+- **Priority Filtering**: Filter tasks by priority level (high, medium, or low) to focus on important tasks.
+- **Status Filtering**: Filter tasks by status (completed or pending) to manage workload efficiently.
 - **User Authentication**:
-  - Register an account to manage tasks.
-  - Login to access and modify tasks.
-  - Edit profile information when needed.
-  - Logout securely when finished.
-- Tasks will be displayed in a list format with status indicators.
+  - **Register**: Create an account to manage tasks.
+  - **Login**: Access and modify tasks.
+  - **Edit Profile**: Update personal information.
+  - **Logout**: Securely log out when finished.
+- **Task Display**: Tasks are listed with clear status indicators.
 
