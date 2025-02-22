@@ -37,6 +37,26 @@ $search = '%' . ($_GET['search'] ?? '') . '%';
 $status = isset($_GET['status']) ? trim($_GET['status']) : '';
 $priority = $_GET['priority'] ?? '';
 
+$cleanParams = [];
+if (!empty(trim($_GET['search'] ?? ''))) {
+    $cleanParams['search'] = trim($_GET['search']);
+}
+if (!empty($status)) {
+    $cleanParams['status'] = $status;
+}
+if (!empty($priority)) {
+    $cleanParams['priority'] = $priority;
+}
+
+$currentParams = $_GET;
+unset($currentParams['page']);
+
+if ($currentParams != $cleanParams) {
+    $redirectUrl = 'todo.php?' . http_build_query(array_merge($cleanParams, ['page' => $page]));
+    header("Location: $redirectUrl");
+    exit();
+}
+
 $query = "SELECT * FROM tasks WHERE user_id = ? AND task LIKE ?";
 $totalQuery = "SELECT COUNT(*) AS total FROM tasks WHERE user_id = ? AND task LIKE ?";
 $params = [$user_id, $search];
@@ -99,11 +119,20 @@ $totalPages = ceil($total / $limit);
             <a class="navbar-brand" href="todo.php">TodoList App</a>
             <div class="d-flex ms-auto align-items-center">
                 <form action="todo.php" method="get" class="d-flex me-3" role="search">
-                    <input class="form-control me-2" type="search" name="search" placeholder="Search tasks" aria-label="Search">
+                    <input class="form-control me-2"
+                        type="search"
+                        name="search"
+                        placeholder="Search tasks"
+                        aria-label="Search"
+                        value="<?= htmlspecialchars($cleanParams['search'] ?? '') ?>">
                     <button class="btn btn-outline-primary" type="submit">Search</button>
                 </form>
                 <div class="dropdown">
-                    <button class="btn btn-transparent border-0 text-primary" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-transparent border-0 text-primary"
+                        type="button"
+                        id="profileDropdown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
                         <i class="fa fa-user text-primary"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
@@ -126,27 +155,30 @@ $totalPages = ceil($total / $limit);
     <!-- Filter Status -->
     <div class="container mt-3">
         <form method="get" action="todo.php" class="row g-2">
-            <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
+            <?php if (!empty($cleanParams['search'])): ?>
+                <input type="hidden" name="search" value="<?= htmlspecialchars($cleanParams['search']) ?>">
+            <?php endif; ?>
+
             <div class="col-md-3">
                 <label class="form-label">Status:</label>
                 <select name="status" class="form-select" onchange="this.form.submit()">
-                    <option value="" <?php echo empty($status) ? 'selected' : ''; ?>>All</option>
-                    <option value="Pending" <?php echo $status === 'Pending' ? 'selected' : ''; ?>>Pending</option>
-                    <option value="Completed" <?php echo $status === 'Completed' ? 'selected' : ''; ?>>Completed</option>
+                    <option value="" <?= empty($status) ? 'selected' : '' ?>>All</option>
+                    <option value="Pending" <?= $status === 'Pending' ? 'selected' : '' ?>>Pending</option>
+                    <option value="Completed" <?= $status === 'Completed' ? 'selected' : '' ?>>Completed</option>
                 </select>
             </div>
+
             <div class="col-md-3">
                 <label class="form-label">Priority:</label>
                 <select name="priority" class="form-select" onchange="this.form.submit()">
-                    <option value="" <?php echo empty($priority) ? 'selected' : ''; ?>>All</option>
-                    <option value="Low" <?php echo $priority === 'Low' ? 'selected' : ''; ?>>Low</option>
-                    <option value="Medium" <?php echo $priority === 'Medium' ? 'selected' : ''; ?>>Medium</option>
-                    <option value="High" <?php echo $priority === 'High' ? 'selected' : ''; ?>>High</option>
+                    <option value="" <?= empty($priority) ? 'selected' : '' ?>>All</option>
+                    <option value="Low" <?= $priority === 'Low' ? 'selected' : '' ?>>Low</option>
+                    <option value="Medium" <?= $priority === 'Medium' ? 'selected' : '' ?>>Medium</option>
+                    <option value="High" <?= $priority === 'High' ? 'selected' : '' ?>>High</option>
                 </select>
             </div>
         </form>
     </div>
-
 
     <!-- Content -->
     <div class="container mt-3">
@@ -274,23 +306,25 @@ $totalPages = ceil($total / $limit);
                     <?php if ($total > $limit): ?>
                         <nav aria-label="Page navigation example">
                             <ul class="pagination justify-content-end me-3">
-                                <li class="page-item <?php echo $page == 1 ? 'disabled' : ''; ?>">
+                                <li class="page-item <?= $page == 1 ? 'disabled' : '' ?>">
                                     <a class="page-link"
-                                        href="?page=<?= $page - 1 ?>&search=<?= urlencode($search) ?>&status=<?= urlencode($status) ?>&priority=<?= urlencode($priority) ?>">
+                                        href="?<?= http_build_query(array_merge($cleanParams, ['page' => $page - 1])) ?>">
                                         Previous
                                     </a>
                                 </li>
+
                                 <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                                     <li class="page-item <?= $page == $i ? 'active' : '' ?>">
                                         <a class="page-link"
-                                            href="?page=<?= $i ?>&search=<?= urlencode($search) ?>&status=<?= urlencode($status) ?>&priority=<?= urlencode($priority) ?>">
+                                            href="?<?= http_build_query(array_merge($cleanParams, ['page' => $i])) ?>">
                                             <?= $i ?>
                                         </a>
                                     </li>
                                 <?php endfor; ?>
-                                <li class="page-item <?php echo $page == $totalPages ? 'disabled' : ''; ?>">
+
+                                <li class="page-item <?= $page == $totalPages ? 'disabled' : '' ?>">
                                     <a class="page-link"
-                                        href="?page=<?= $page + 1 ?>&search=<?= urlencode($search) ?>&status=<?= urlencode($status) ?>&priority=<?= urlencode($priority) ?>">
+                                        href="?<?= http_build_query(array_merge($cleanParams, ['page' => $page + 1])) ?>">
                                         Next
                                     </a>
                                 </li>
