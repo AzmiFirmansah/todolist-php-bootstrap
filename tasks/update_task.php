@@ -15,18 +15,21 @@ $priority = $_POST['priority'] ?? 'Medium';
 $user_id = $_SESSION['user_id'];
 
 if (!$id || empty($task) || empty($due_date)) {
-    header("Location: ../todo.php?task_updated=false&error=invalid_input");
+    $_SESSION['task_updated'] = 'invalid_input';
+    header("Location: ../todo.php");
     exit();
 }
 
 $allowed_priorities = ['High', 'Medium', 'Low'];
 if (!in_array($priority, $allowed_priorities)) {
-    header("Location: ../todo.php?task_updated=false&error=invalid_priority");
+    $_SESSION['task_updated'] = 'invalid_priority';
+    header("Location: ../todo.php");
     exit();
 }
 
 if (stripos($task, 'iosong') !== false) {
-    header("Location: ../todo.php?task_updated=false&error=forbidden_word");
+    $_SESSION['task_updated'] = 'forbidden_word';
+    header("Location: ../todo.php");
     exit();
 }
 
@@ -40,10 +43,11 @@ $stmt->bind_param("ssssii", $task, $due_date, $status, $priority, $id, $user_id)
 $stmt->execute();
 
 if ($stmt->affected_rows > 0) {
-    header("Location: ../todo.php?task_updated=success");
+    $_SESSION['task_updated'] = 'success';
 } else {
-    header("Location: ../todo.php?task_updated=failed");
+    $_SESSION['task_updated'] = 'failed';
 }
 
 $stmt->close();
+header("Location: ../todo.php");
 exit();

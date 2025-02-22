@@ -3,6 +3,7 @@ require_once __DIR__ . "/../includes/connection.php";
 session_start();
 
 if (!isset($_SESSION['username'])) {
+    $_SESSION['error'] = 'unauthorized_access';
     header("Location: ../index.php");
     exit();
 }
@@ -17,15 +18,17 @@ $userData = $result->fetch_assoc();
 $stmt->close();
 
 if (!$userData) {
-    echo "User not found.";
+    $_SESSION['error'] = 'user_not_found';
+    header("Location: ../todo.php");
     exit();
 }
 
 $user_id = $userData['id'];
-
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
 if ($id <= 0) {
-    echo "Invalid task ID.";
+    $_SESSION['error'] = 'invalid_task_id';
+    header("Location: ../todo.php");
     exit();
 }
 
@@ -37,7 +40,8 @@ $row = $result->fetch_assoc();
 $stmt->close();
 
 if (!$row) {
-    echo "Task not found or unauthorized access.";
+    $_SESSION['error'] = 'task_not_found';
+    header("Location: ../todo.php");
     exit();
 }
 ?>

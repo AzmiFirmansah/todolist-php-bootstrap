@@ -21,7 +21,8 @@ if ($result->num_rows === 1) {
     $userData = $result->fetch_assoc();
     $user_id = (int)$userData['id'];
 } else {
-    header("Location: ../todo.php?error=user_not_found");
+    $_SESSION['task_deleted'] = 'user_not_found';
+    header("Location: ../todo.php");
     exit();
 }
 
@@ -37,20 +38,20 @@ if ($id > 0 && $user_id !== null) {
         $deleteStmt->execute();
 
         if ($deleteStmt->affected_rows === 1) {
-            header("Location: ../todo.php?task_deleted=success");
+            $_SESSION['task_deleted'] = 'success';
         } else {
-            header("Location: ../todo.php?task_deleted=db_error");
+            $_SESSION['task_deleted'] = 'db_error';
         }
+        $deleteStmt->close();
     } else {
-        header("Location: ../todo.php?task_deleted=unauthorized");
+        $_SESSION['task_deleted'] = 'unauthorized';
     }
-
     $checkStmt->close();
-    $deleteStmt->close();
 } else {
-    header("Location: ../todo.php?task_deleted=invalid_id");
+    $_SESSION['task_deleted'] = 'invalid_id';
 }
 
 $stmt->close();
 $conn->close();
+header("Location: ../todo.php");
 exit();

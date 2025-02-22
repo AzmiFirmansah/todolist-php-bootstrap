@@ -163,36 +163,41 @@ $totalPages = ceil($total / $limit);
                     <div class="card-body">
                         <!-- alert -->
                         <?php
-                        if (isset($_GET['task_added'])) {
-                            $message = match ($_GET['task_added']) {
+                        if (isset($_SESSION['task_added'])) {
+                            $message = match ($_SESSION['task_added']) {
                                 'success' => 'Task added successfully!',
                                 'empty_task' => 'Task cannot be empty!',
                                 'invalid_date' => 'Invalid date format!',
+                                'invalid_priority' => 'Invalid priority!',
+                                'invalid_status' => 'Invalid status!',
+                                'user_not_found' => 'User not found!',
                                 'db_error' => 'Database error occurred!',
                                 default => 'Task addition failed!',
                             };
                             echo '
-                            <div class="alert alert-' . ($_GET['task_added'] === 'success' ? 'success' : 'danger') . ' alert-dismissible fade show" role="alert">
+                            <div class="alert alert-' . ($_SESSION['task_added'] === 'success' ? 'success' : 'danger') . ' alert-dismissible fade show" role="alert">
                                 ' . htmlspecialchars($message) . '
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>';
+                            unset($_SESSION['task_added']);
                         }
 
-                        if (isset($_GET['task_updated'])) {
-                            $message = match ($_GET['task_updated']) {
+                        if (isset($_SESSION['task_updated'])) {
+                            $message = match ($_SESSION['task_updated']) {
                                 'success' => 'Task updated successfully!',
                                 'failed' => 'Task update failed!',
                                 default => 'Unknown update status!',
                             };
                             echo '
-                            <div class="alert alert-' . ($_GET['task_updated'] === 'success' ? 'success' : 'danger') . ' alert-dismissible fade show" role="alert">
+                            <div class="alert alert-' . ($_SESSION['task_updated'] === 'success' ? 'success' : 'danger') . ' alert-dismissible fade show" role="alert">
                                 ' . htmlspecialchars($message) . '
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>';
+                            unset($_SESSION['task_updated']);
                         }
 
-                        if (isset($_GET['task_deleted'])) {
-                            $message = match ($_GET['task_deleted']) {
+                        if (isset($_SESSION['task_deleted'])) {
+                            $message = match ($_SESSION['task_deleted']) {
                                 'success' => 'Task deleted successfully!',
                                 'unauthorized' => 'You are not authorized to delete this task!',
                                 'invalid_id' => 'Invalid task ID!',
@@ -200,10 +205,11 @@ $totalPages = ceil($total / $limit);
                                 default => 'Task deletion failed!',
                             };
                             echo '
-                            <div class="alert alert-' . ($_GET['task_deleted'] === 'success' ? 'success' : 'danger') . ' alert-dismissible fade show" role="alert">
+                            <div class="alert alert-' . ($_SESSION['task_deleted'] === 'success' ? 'success' : 'danger') . ' alert-dismissible fade show" role="alert">
                                 ' . htmlspecialchars($message) . '
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>';
+                            unset($_SESSION['task_deleted']);
                         }
                         ?>
 

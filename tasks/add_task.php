@@ -18,7 +18,8 @@ $userData = $userResult->fetch_assoc();
 $userStmt->close();
 
 if (!$userData) {
-    header("Location: ../todo.php?task_added=user_not_found");
+    $_SESSION['task_added'] = 'user_not_found';
+    header("Location: ../todo.php");
     exit();
 }
 
@@ -30,25 +31,29 @@ $status = $_POST['status'] ?? 'Pending';
 $priority = $_POST['priority'] ?? 'Medium';
 
 if ($task === '') {
-    header("Location: ../todo.php?task_added=empty_task");
+    $_SESSION['task_added'] = 'empty_task';
+    header("Location: ../todo.php");
     exit();
 }
 
 $dateObject = DateTime::createFromFormat('Y-m-d', $due_date);
 if (!$dateObject || $dateObject->format('Y-m-d') !== $due_date) {
-    header("Location: ../todo.php?task_added=invalid_date");
+    $_SESSION['task_added'] = 'invalid_date';
+    header("Location: ../todo.php");
     exit();
 }
 
 $valid_priorities = ['Low', 'Medium', 'High'];
 if (!in_array($priority, $valid_priorities)) {
-    header("Location: ../todo.php?task_added=invalid_priority");
+    $_SESSION['task_added'] = 'invalid_priority';
+    header("Location: ../todo.php");
     exit();
 }
 
 $valid_statuses = ['Pending', 'Completed'];
 if (!in_array($status, $valid_statuses)) {
-    header("Location: ../todo.php?task_added=invalid_status");
+    $_SESSION['task_added'] = 'invalid_status';
+    header("Location: ../todo.php");
     exit();
 }
 
@@ -57,11 +62,12 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("issss", $user_id, $task, $due_date, $status, $priority);
 
 if ($stmt->execute()) {
-    header("Location: ../todo.php?task_added=success");
+    $_SESSION['task_added'] = 'success';
 } else {
-    header("Location: ../todo.php?task_added=db_error");
+    $_SESSION['task_added'] = 'db_error';
 }
 
 $stmt->close();
 $conn->close();
+header("Location: ../todo.php");
 exit();
