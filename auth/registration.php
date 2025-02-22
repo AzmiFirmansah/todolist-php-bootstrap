@@ -26,14 +26,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($password)) {
         $passwordError = "Password cannot be empty.";
     } elseif (strpos($password, ' ') !== false) {
-        $passwordError = "Password cannot have spaces.";
+        $passwordError = "Password cannot contain spaces.";
     } elseif (strlen($password) < 8) {
         $passwordError = "Password must be at least 8 characters.";
+    } elseif (!preg_match('/[0-9]/', $password) || !preg_match('/[\W_]/', $password)) {
+        $passwordError = "Password must contain at least one number and one special character.";
     }
 
+
     if (empty($fullnameError) && empty($usernameError) && empty($passwordError)) {
-        $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
-        $stmt->bind_param("s", $username);
+        $lowerUsername = strtolower($username);
+        $stmt = $conn->prepare("SELECT id FROM users WHERE LOWER(username) = ?");
+        $stmt->bind_param("s", $lowerUsername);
         $stmt->execute();
         $result = $stmt->get_result();
         $stmt->close();
@@ -43,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
             $stmt = $conn->prepare("INSERT INTO users (fullname, username, password) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $fullname, $username, $hashedPassword);
+            $stmt->bind_param("sss", $fullname, $lowerUsername, $hashedPassword);
 
             if ($stmt->execute()) {
                 $_SESSION['signup_success'] = "Account created successfully!";

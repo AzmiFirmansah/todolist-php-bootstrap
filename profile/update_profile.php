@@ -13,10 +13,19 @@ $new_username = trim($_POST['username'] ?? '');
 $current_password = trim($_POST['current_password'] ?? '');
 $new_password = trim($_POST['password'] ?? '');
 
-if (empty($fullname) || empty($new_username)) {
-    $_SESSION['error'] = "All fields are required";
-    header("Location: edit_profile.php");
-    exit();
+$fullnameError = "";
+$usernameError = "";
+$currentPasswordError = "";
+$newPasswordError = "";
+
+if (empty($fullname)) {
+    $fullnameError = "Full name cannot be empty.";
+}
+
+if (empty($new_username)) {
+    $usernameError = "Username cannot be empty.";
+} elseif (preg_match('/\s/', $new_username)) {
+    $usernameError = "Username cannot contain spaces.";
 }
 
 $stmt = $conn->prepare("SELECT fullname, username, password FROM users WHERE id = ?");
@@ -26,27 +35,44 @@ $user = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 
 if ($fullname === $user['fullname'] && $new_username === $user['username'] && empty($new_password)) {
-    $_SESSION['error'] = "No changes detected";
+    $_SESSION['error'] = "No changes detected.";
     header("Location: edit_profile.php");
     exit();
 }
 
 if (!password_verify($current_password, $user['password'])) {
-    $_SESSION['old']['current_password_error'] = "Current password is incorrect";
-    header("Location: edit_profile.php");
-    exit();
+    $currentPasswordError = "Current password is incorrect.";
 }
 
 if ($new_username !== $user['username']) {
-    $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
+    $stmt = $conn->prepare("SELECT id FROM users WHERE LOWER(username) = LOWER(?)");
     $stmt->bind_param("s", $new_username);
     $stmt->execute();
     if ($stmt->get_result()->num_rows > 0) {
-        $_SESSION['error'] = "Username already taken";
-        header("Location: edit_profile.php");
-        exit();
+        $usernameError = "Username is already taken.";
     }
     $stmt->close();
+}
+
+if (!empty($new_password)) {
+    if (password_verify($new_password, $user['password'])) {
+        $newPasswordError = "New password cannot be the same as the current password.";
+    } elseif (preg_match('/\s/', $new_password)) {
+        $newPasswordError = "Password cannot contain spaces.";
+    } elseif (strlen($new_password) < 8) {
+        $newPasswordError = "Password must be at least 8 characters.";
+    } elseif (!preg_match('/[0-9]/', $new_password) || !preg_match('/[\W_]/', $new_password)) {
+        $newPasswordError = "Password must contain at least one number and one special character.";
+    }
+}
+
+if (!empty($fullnameError) || !empty($usernameError) || !empty($currentPasswordError) || !empty($newPasswordError)) {
+    $_SESSION['old']['fullname_error'] = $fullnameError;
+    $_SESSION['old']['username_error'] = $usernameError;
+    $_SESSION['old']['current_password_error'] = $currentPasswordError;
+    $_SESSION['old']['password_error'] = $newPasswordError;
+    header("Location: edit_profile.php");
+    exit();
 }
 
 $query = "UPDATE users SET fullname = ?, username = ?";
@@ -54,18 +80,6 @@ $params = [$fullname, $new_username];
 $types = "ss";
 
 if (!empty($new_password)) {
-    if (strpos($new_password, ' ') !== false) {
-        $_SESSION['old']['password_error'] = "Password cannot contain spaces";
-        header("Location: edit_profile.php");
-        exit();
-    }
-
-    if (strlen($new_password) < 8) {
-        $_SESSION['old']['password_error'] = "Password must be at least 8 characters";
-        header("Location: edit_profile.php");
-        exit();
-    }
-
     $query .= ", password = ?";
     $types .= "s";
     $params[] = password_hash($new_password, PASSWORD_BCRYPT);
@@ -79,10 +93,10 @@ $stmt = $conn->prepare($query);
 $stmt->bind_param($types, ...$params);
 
 if ($stmt->execute()) {
-    $_SESSION['success'] = "Profile updated successfully";
+    $_SESSION['success'] = "Profile updated successfully.";
     $_SESSION['username'] = $new_username;
 } else {
-    $_SESSION['error'] = "Error updating profile: " . $conn->error;
+    $_SESSION['error'] = "Error updating profile.";
 }
 
 $stmt->close();

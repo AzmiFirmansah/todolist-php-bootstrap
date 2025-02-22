@@ -59,7 +59,7 @@ if (!empty($priority)) {
     $types .= "s";
 }
 
-$query .= " ORDER BY FIELD(priority, 'High', 'Medium', 'Low'), due_date ASC LIMIT ?, ?";
+$query .= " ORDER BY id DESC LIMIT ?, ?";
 $params[] = $start;
 $params[] = $limit;
 $types .= "ii";

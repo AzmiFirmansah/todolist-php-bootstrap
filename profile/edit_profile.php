@@ -17,6 +17,7 @@ $stmt->close();
 
 $current_password_error = $_SESSION['old']['current_password_error'] ?? '';
 $password_error = $_SESSION['old']['password_error'] ?? '';
+$username_error = $_SESSION['old']['username_error'] ?? '';
 unset($_SESSION['old']);
 ?>
 <!DOCTYPE html>
@@ -82,9 +83,9 @@ unset($_SESSION['old']);
                             <div class="mb-3">
                                 <label class="form-label">Username</label>
                                 <input type="text" class="form-control" name="username" value="<?= htmlspecialchars($userData['username']) ?>" required>
-                                <?php if (isset($_SESSION['error'])) : ?>
+                                <?php if ($username_error) : ?>
                                     <small class="text-danger">
-                                        <?= htmlspecialchars($_SESSION['error']) ?>
+                                        <?= htmlspecialchars($username_error) ?>
                                     </small>
                                 <?php endif; ?>
                             </div>
@@ -93,7 +94,7 @@ unset($_SESSION['old']);
                                 <input type="password" class="form-control" name="current_password" placeholder="Enter your current password" required>
                                 <?php if ($current_password_error) : ?>
                                     <small class="text-danger">
-                                        <?= $current_password_error ?>
+                                        <?= htmlspecialchars($current_password_error) ?>
                                     </small>
                                 <?php endif; ?>
                             </div>
@@ -102,7 +103,7 @@ unset($_SESSION['old']);
                                 <input type="password" class="form-control" name="password" placeholder="Leave blank to keep current password">
                                 <?php if ($password_error) : ?>
                                     <small class="text-danger">
-                                        <?= $password_error ?>
+                                        <?= htmlspecialchars($password_error) ?>
                                     </small>
                                 <?php endif; ?>
                             </div>
