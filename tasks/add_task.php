@@ -50,7 +50,7 @@ if (!in_array($priority, $valid_priorities)) {
     exit();
 }
 
-$valid_statuses = ['Pending', 'Completed'];
+$valid_statuses = ['Pending', 'In Progress', 'Completed'];
 if (!in_array($status, $valid_statuses)) {
     $_SESSION['task_added'] = 'invalid_status';
     header("Location: ../todo.php");

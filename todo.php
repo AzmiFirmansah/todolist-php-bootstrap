@@ -164,6 +164,7 @@ $totalPages = ceil($total / $limit);
                 <select name="status" class="form-select" onchange="this.form.submit()">
                     <option value="" <?= empty($status) ? 'selected' : '' ?>>All</option>
                     <option value="Pending" <?= $status === 'Pending' ? 'selected' : '' ?>>Pending</option>
+                    <option value="In Progress" <?= $status === 'In Progress' ? 'selected' : '' ?>>In Progress</option>
                     <option value="Completed" <?= $status === 'Completed' ? 'selected' : '' ?>>Completed</option>
                 </select>
             </div>
@@ -364,8 +365,9 @@ $totalPages = ceil($total / $limit);
                         </div>
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
-                            <select class="form-control" id="status" name="status">
+                            <select class="form-select" id="status" name="status" required>
                                 <option value="Pending">Pending</option>
+                                <option value="In Progress">In Progress</option>
                                 <option value="Completed">Completed</option>
                             </select>
                         </div>

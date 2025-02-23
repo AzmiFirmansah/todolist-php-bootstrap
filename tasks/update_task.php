@@ -14,8 +14,16 @@ $status = $_POST['status'] ?? 'Pending';
 $priority = $_POST['priority'] ?? 'Medium';
 $user_id = $_SESSION['user_id'];
 
+$allowed_statuses = ['Pending', 'In Progress', 'Completed'];
+
 if (!$id || empty($task) || empty($due_date)) {
     $_SESSION['task_updated'] = 'invalid_input';
+    header("Location: ../todo.php");
+    exit();
+}
+
+if (!in_array($status, $allowed_statuses)) {
+    $_SESSION['task_updated'] = 'invalid_status';
     header("Location: ../todo.php");
     exit();
 }

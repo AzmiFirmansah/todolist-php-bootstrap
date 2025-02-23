@@ -99,7 +99,7 @@ if (!$row) {
                             </div>
                             <div class="mb-3">
                                 <label for="priority" class="form-label">Priority</label>
-                                <select class="form-control" id="priority" name="priority" required>
+                                <select class="form-select" id="priority" name="priority" required>
                                     <?php
                                     $priorities = ['High', 'Medium', 'Low'];
                                     foreach ($priorities as $priority) {
@@ -111,11 +111,11 @@ if (!$row) {
                             </div>
                             <div class="mb-3">
                                 <label for="status" class="form-label">Status</label>
-                                <select class="form-control" id="status" name="status" required>
+                                <select class="form-select" id="status" name="status" required>
                                     <?php
-                                    $statuses = ['Pending', 'Completed'];
+                                    $statuses = ['Pending', 'In Progress', 'Completed'];
                                     foreach ($statuses as $status) {
-                                        $selected = ($row['status'] == $status) ? 'selected' : '';
+                                        $selected = (strtolower($row['status']) === strtolower($status)) ? 'selected' : '';
                                         echo "<option value=\"$status\" $selected>$status</option>";
                                     }
                                     ?>
