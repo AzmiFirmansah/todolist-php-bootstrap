@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($fullname)) {
         $fullnameError = "Full name cannot be empty.";
-    } elseif (strlen($fullname) > 100) {
+    } elseif (strlen($fullname) > 30) {
         $fullnameError = "Full name cannot exceed 100 characters.";
     }
 
@@ -33,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $passwordError = "Password must contain at least one number and one special character.";
     }
 
-
     if (empty($fullnameError) && empty($usernameError) && empty($passwordError)) {
         $lowerUsername = strtolower($username);
         $stmt = $conn->prepare("SELECT id FROM users WHERE LOWER(username) = ?");
@@ -47,13 +46,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
             $stmt = $conn->prepare("INSERT INTO users (fullname, username, password) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $fullname, $lowerUsername, $hashedPassword);
+            $stmt->bind_param("sss", $fullname, $username, $hashedPassword);
 
             if ($stmt->execute()) {
                 $_SESSION['signup_success'] = "Account created successfully!";
                 $stmt->close();
                 $conn->close();
-                header("Location: registration.php");
+                header("Location: ../index.php");
                 exit();
             } else {
                 $usernameError = "Registration failed. Please try again.";

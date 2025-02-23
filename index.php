@@ -2,14 +2,21 @@
 include __DIR__ . '/includes/connection.php';
 session_start();
 
+if (isset($_SESSION['user_id'])) {
+    header("Location: todo.php");
+    exit();
+}
+
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = trim(substr($_POST['username'], 0, 30));
+    $username = trim($_POST['username']);
     $password = trim($_POST['password']);
 
-    $stmt = $conn->prepare("SELECT * FROM users WHERE BINARY username = ?");
-    $stmt->bind_param("s", $username);
+    $lowerUsername = strtolower($username);
+
+    $stmt = $conn->prepare("SELECT * FROM users WHERE LOWER(username) = ?");
+    $stmt->bind_param("s", $lowerUsername);
     $stmt->execute();
     $result = $stmt->get_result();
     $stmt->close();
@@ -27,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
             $_SESSION['user_id'] = $row['id'];
-            $_SESSION['username'] = $username;
+            $_SESSION['username'] = $row['username'];
             header("Location: todo.php");
             exit();
         }
@@ -60,6 +67,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <strong>LOGIN</strong>
                 </div>
                 <div class="card-body">
+                    <?php if (isset($_SESSION['signup_success'])) : ?>
+                        <div class="alert alert-success">
+                            <?= htmlspecialchars($_SESSION['signup_success']) ?>
+                        </div>
+                        <?php unset($_SESSION['signup_success']); ?>
+                    <?php endif; ?>
+
                     <?php if (!empty($error)): ?>
                         <div class="alert alert-danger">
                             <?= htmlspecialchars($error); ?>

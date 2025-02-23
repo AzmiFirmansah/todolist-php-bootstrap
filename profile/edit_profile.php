@@ -15,6 +15,7 @@ $result = $stmt->get_result();
 $userData = $result->fetch_assoc();
 $stmt->close();
 
+$fullname_error = $_SESSION['old']['fullname_error'] ?? '';
 $current_password_error = $_SESSION['old']['current_password_error'] ?? '';
 $password_error = $_SESSION['old']['password_error'] ?? '';
 $username_error = $_SESSION['old']['username_error'] ?? '';
@@ -79,6 +80,9 @@ unset($_SESSION['old']);
                             <div class="mb-3">
                                 <label class="form-label">Full Name</label>
                                 <input type="text" class="form-control" name="fullname" value="<?= htmlspecialchars($userData['fullname']) ?>" required>
+                                <?php if ($fullname_error) : ?>
+                                    <small class="text-danger"><?= htmlspecialchars($fullname_error) ?></small>
+                                <?php endif; ?>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Username</label>

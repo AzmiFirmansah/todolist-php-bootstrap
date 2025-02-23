@@ -20,6 +20,8 @@ $newPasswordError = "";
 
 if (empty($fullname)) {
     $fullnameError = "Full name cannot be empty.";
+} elseif (strlen($fullname) > 30) {
+    $fullnameError = "Full name cannot exceed 100 characters.";
 }
 
 if (empty($new_username)) {
@@ -28,7 +30,7 @@ if (empty($new_username)) {
     $usernameError = "Username cannot contain spaces.";
 }
 
-$stmt = $conn->prepare("SELECT fullname, username, password FROM users WHERE id = ?");
+$stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();
@@ -45,8 +47,8 @@ if (!password_verify($current_password, $user['password'])) {
 }
 
 if ($new_username !== $user['username']) {
-    $stmt = $conn->prepare("SELECT id FROM users WHERE LOWER(username) = LOWER(?)");
-    $stmt->bind_param("s", $new_username);
+    $stmt = $conn->prepare("SELECT id FROM users WHERE LOWER(username) = LOWER(?) AND id != ?");
+    $stmt->bind_param("si", $new_username, $user_id);
     $stmt->execute();
     if ($stmt->get_result()->num_rows > 0) {
         $usernameError = "Username is already taken.";
