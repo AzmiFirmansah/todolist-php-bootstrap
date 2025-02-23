@@ -6,18 +6,12 @@ This repository contains a simple TodoList web application built with PHP, MySQL
 
 ## Key Features
 
-- **Task Management**: Add, edit, and delete tasks easily.
-- **Due Date Tracking**: Assign due dates to tasks.
-- **Status Updates**: Mark tasks as pending or completed.
-- **Search Bar**: Quickly search tasks by name.
-- **Pagination**: Navigate through multiple pages of tasks efficiently.
-- **Priority Filtering**: Filter tasks by priority level (high, medium, or low).
-- **Status Filtering**: Filter tasks by status (completed or pending).
-- **Responsive Design**: Built with Bootstrap for a mobile-friendly UI.
-- **User Authentication**:
-  - Register an account to manage tasks.
-  - Login and logout functionality.
-  - Edit user profile information.
+- **Manage Tasks**: Add, edit, delete, and mark tasks as completed or pending.
+- **Due Dates & Priority**: Assign due dates and prioritize tasks (high, medium, low).
+- **Search & Filters**: Search tasks and filter by priority or status.
+- **Pagination**: Efficient navigation through task lists.
+- **User Authentication**: Register, login, logout, and edit profiles.
+- **Responsive Design**: Mobile-friendly interface with Bootstrap.
 
 ## Installation Instructions
 
@@ -57,17 +51,8 @@ This repository contains a simple TodoList web application built with PHP, MySQL
 
 ## Usage Guide
 
-- **Add Task**: Click the **"Add Task"** button to create a new task.
-- **Edit Task**: Click the **"Edit"** button to update an existing task.
-- **Delete Task**: Click the **"Delete"** button to remove a task (confirmation required).
-- **Search Tasks**: Use the **Search Bar** in the navbar to filter tasks by name. Enter a keyword and click **Search** to see results.
-- **Pagination**: Navigate between pages when there are many tasks. The application displays a set number of tasks per page for easier management.
-- **Priority Filtering**: Filter tasks by priority level (high, medium, or low) to focus on important tasks.
-- **Status Filtering**: Filter tasks by status (completed or pending) to manage workload efficiently.
-- **User Authentication**:
-  - **Register**: Create an account to manage tasks.
-  - **Login**: Access and modify tasks.
-  - **Edit Profile**: Update personal information.
-  - **Logout**: Securely log out when finished.
-- **Task Display**: Tasks are listed with clear status indicators.
+- **Create & Manage Tasks**: Add, edit, delete, and track task status.
+- **Search & Filter**: Use search bar and filters for quick access.
+- **User Actions**: Register, login, edit profile, and logout.
+- **Navigation**: Use pagination to browse tasks efficiently.
 
