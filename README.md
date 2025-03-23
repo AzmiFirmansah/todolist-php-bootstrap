@@ -2,7 +2,7 @@
 
 ## Description
 
-This repository contains a simple TodoList web application built with PHP, MySQL, and Bootstrap. The project provides a basic task management system where users can add, edit, delete, and manage their tasks efficiently. The purpose of this project is to demonstrate CRUD operations and responsive UI design with Bootstrap.
+This repository contains a simple TodoList web application built with PHP, MySQL, and Bootstrap. The project provides a basic task management system where users can add, edit, delete, and manage their tasks efficiently. The purpose of this project is to demonstrate CRUD operations and UI design with Bootstrap.
 
 ## Key Features
 
@@ -11,7 +11,6 @@ This repository contains a simple TodoList web application built with PHP, MySQL
 - **Search & Filters**: Search tasks and filter by priority or status.
 - **Pagination**: Efficient navigation through task lists.
 - **User Authentication**: Register, login, logout, and edit profiles.
-- **Responsive Design**: Mobile-friendly interface with Bootstrap.
 
 ## Installation Instructions
 
@@ -48,3 +47,4 @@ This repository contains a simple TodoList web application built with PHP, MySQL
 - **MySQL**: 8.0.30 or higher (Required)
 - **Web Server**: Apache 2.4+ or Nginx
 - **Browser**: Chrome, Firefox, Edge (modern versions)
+
